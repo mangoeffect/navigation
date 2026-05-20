@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>极光导航 - 一站式上网导航</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #21262d;
+      --bg-hover: #30363d;
+      --bg-input: #0d1117;
+      --border: #30363d;
+      --border-hover: #58a6ff;
+      --border-active: #1f6feb;
+      --text-primary: #f0f6fc;
+      --text-secondary: #8b949e;
+      --text-tertiary: #6e7681;
+      --accent: #58a6ff;
+      --accent-dim: rgba(88,166,255,0.15);
+      --accent-green: #3fb950;
+      --accent-green-dim: rgba(63,185,80,0.15);
+      --accent-purple: #a371f7;
+      --accent-pink: #db61a2;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.5);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f6f8fa;
+      --bg-tertiary: #f0f2f5;
+      --bg-hover: #e8eaed;
+      --bg-input: #ffffff;
+      --border: #d0d7de;
+      --border-hover: #0969da;
+      --border-active: #0550ae;
+      --text-primary: #1f2328;
+      --text-secondary: #656d76;
+      --text-tertiary: #8b949e;
+      --accent: #0969da;
+      --accent-dim: rgba(9,105,218,0.1);
+      --accent-green: #1a7f37;
+      --accent-green-dim: rgba(26,127,55,0.1);
+      --accent-purple: #8250df;
+      --accent-pink: #bf3989;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+    }
+
+    body {
+      font-family: 'Noto Sans SC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+      transition: background var(--transition), color var(--transition);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .header {
+      text-align: center;
+      padding: 60px 0 20px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .header-logo {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', 'Noto Sans SC', monospace;
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+    }
+
+    .header-subtitle {
+      margin-top: 6px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    @keyframes fadeInUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .search-section {
+      margin: 24px auto 0;
+      max-width: 720px;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 0.1s forwards;
+    }
+
+    .search-wrapper {
+      display: flex;
+      align-items: center;
+      background: var(--bg-secondary);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-wrapper:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim), var(--shadow-md);
+    }
+
+    .engine-selector {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .engine-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 14px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius-md) - 4px);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: all var(--transition);
+      font-family: inherit;
+    }
+
+    .engine-btn:hover { background: var(--bg-hover); border-color: var(--border-hover); }
+
+    .engine-btn .arrow {
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+      transition: transform var(--transition);
+    }
+
+    .engine-btn.active .arrow { transform: rotate(180deg); }
+
+    .engine-dropdown {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      min-width: 220px;
+      z-index: 100;
+      opacity: 0;
+      transform: translateY(-8px);
+      pointer-events: none;
+      transition: all var(--transition);
+      overflow: hidden;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .engine-dropdown.open {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .engine-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background var(--transition);
+      color: var(--text-primary);
+    }
+
+    .engine-option:hover { background: var(--bg-hover); }
+
+    .engine-option.selected {
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+
+    .engine-option .engine-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: var(--bg-tertiary);
+      flex-shrink: 0;
+    }
+
+    .search-input-wrap { flex: 1; position: relative; }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-size: 1.05rem;
+      font-family: 'JetBrains Mono', 'Noto Sans SC', monospace;
+    }
+
+    .search-input::placeholder { color: var(--text-tertiary); }
+
+    .search-btn {
+      flex-shrink: 0;
+      padding: 10px 20px;
+      margin: 0 2px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: calc(var(--radius-md) - 4px);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .search-btn:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+    .search-btn:active { transform: scale(0.97); }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .ai-section {
+      margin-top: 36px;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 0.2s forwards;
+    }
+
+    .ai-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .ai-card {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition);
+      text-decoration: none;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .ai-card:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .ai-card .ai-icon {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem; font-weight: 600;
+      background: var(--accent-dim);
+    }
+
+    .ai-card:nth-child(2n) .ai-icon { background: var(--accent-green-dim); }
+    .ai-card:nth-child(3n) .ai-icon { background: rgba(163,113,247,0.15); }
+    .ai-card:nth-child(5n) .ai-icon { background: rgba(219,97,162,0.15); }
+
+    .nav-section {
+      margin-top: 36px;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 0.3s forwards;
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .category-tabs::-webkit-scrollbar { height: 4px; }
+    .category-tabs::-webkit-scrollbar-track { background: transparent; }
+    .category-tabs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .category-tab {
+      flex-shrink: 0;
+      padding: 8px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: all var(--transition);
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .category-tab:hover { color: var(--text-primary); background: var(--bg-hover); }
+
+    .category-tab.active {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .sites-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 10px;
+    }
+
+    .site-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 8px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition);
+      text-decoration: none;
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .site-card:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .site-card .site-icon-wrap {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      background: var(--bg-tertiary);
+      transition: background var(--transition);
+    }
+
+    .site-card:hover .site-icon-wrap { background: var(--accent-dim); }
+
+    .site-card .site-name {
+      font-size: 0.78rem;
+      font-weight: 500;
+      text-align: center;
+      color: var(--text-primary);
+      line-height: 1.3;
+      word-break: break-word;
+    }
+
+    .settings-fab {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: var(--text-secondary);
+      transition: all var(--transition);
+      z-index: 90;
+    }
+
+    .settings-fab:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: var(--border-hover);
+      transform: rotate(30deg);
+    }
+
+    /* Tooltip */
+    .tooltip {
+      position: absolute;
+      bottom: 56px;
+      right: 0;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition);
+      border: 1px solid var(--border);
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition);
+    }
+
+    .overlay.open { opacity: 1; pointer-events: auto; }
+
+    .settings-panel {
+      position: fixed;
+      top: 0; right: 0;
+      width: 420px;
+      max-width: 100vw;
+      height: 100vh;
+      background: var(--bg-primary);
+      border-left: 1px solid var(--border);
+      z-index: 101;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .settings-panel.open { transform: translateX(0); }
+
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .settings-header h2 { font-size: 1.1rem; font-weight: 600; }
+
+    .settings-close {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      transition: all var(--transition);
+    }
+
+    .settings-close:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+    .settings-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+    }
+
+    .settings-body::-webkit-scrollbar { width: 4px; }
+    .settings-body::-webkit-scrollbar-track { background: transparent; }
+    .settings-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .settings-group { margin-bottom: 28px; }
+
+    .settings-group-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+    }
+
+    .setting-label { font-size: 0.9rem; color: var(--text-primary); }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px; height: 24px;
+      border-radius: 12px;
+      background: var(--border);
+      cursor: pointer;
+      transition: background var(--transition);
+      border: none;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch.on { background: var(--accent); }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform var(--transition);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .toggle-switch.on::after { transform: translateX(20px); }
+
+    .editable-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .editable-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+    }
+
+    .editable-item .item-icon {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--bg-tertiary);
+      flex-shrink: 0;
+    }
+
+    .editable-item .item-name {
+      flex: 1;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .editable-item .item-url {
+      font-size: 0.72rem;
+      color: var(--text-tertiary);
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .editable-item .item-delete {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-tertiary);
+      font-size: 0.85rem;
+      transition: all var(--transition);
+      flex-shrink: 0;
+    }
+
+    .editable-item .item-delete:hover { background: rgba(248,81,73,0.15); color: #f85149; }
+
+    .add-item-form {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .add-item-form input {
+      flex: 1;
+      padding: 8px 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 0.8rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color var(--transition);
+    }
+
+    .add-item-form input:focus { border-color: var(--accent); }
+    .add-item-form input::placeholder { color: var(--text-tertiary); }
+
+    .btn-sm {
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: all var(--transition);
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .btn-sm:hover { background: var(--bg-hover); }
+
+    .btn-sm.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .btn-sm.primary:hover { filter: brightness(1.1); }
+
+    .btn-sm.danger { color: #f85149; border-color: rgba(248,81,73,0.3); }
+    .btn-sm.danger:hover { background: rgba(248,81,73,0.1); }
+
+    .settings-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      gap: 10px;
+    }
+
+    .settings-footer .btn-sm { flex: 1; text-align: center; }
+
+    .model-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      margin-left: 4px;
+      font-weight: 600;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 60px 0 40px;
+      color: var(--text-tertiary);
+      font-size: 0.8rem;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 0.5s forwards;
+    }
+
+    .category-count {
+      font-size: 0.7rem;
+      color: var(--text-tertiary);
+      font-weight: 400;
+    }
+
+    @media (max-width: 768px) {
+      .header { padding: 40px 0 16px; }
+      .header-logo { font-size: 1.5rem; }
+      .search-wrapper { flex-wrap: wrap; gap: 4px; }
+      .engine-btn { padding: 8px 10px; font-size: 0.8rem; }
+      .search-input { padding: 10px 12px; font-size: 0.95rem; }
+      .search-btn { padding: 8px 16px; font-size: 0.8rem; }
+      .sites-grid { grid-template-columns: repeat(auto-fill, minmax(80px,1fr)); gap: 8px; }
+      .site-card { padding: 12px 6px; }
+      .site-card .site-name { font-size: 0.72rem; }
+      .settings-panel { width: 100vw; }
+      .ai-grid { gap: 8px; }
+      .ai-card { padding: 8px 12px; font-size: 0.8rem; }
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 0 12px; }
+      .sites-grid { grid-template-columns: repeat(3,1fr); }
+      .search-wrapper { flex-direction: column; gap: 0; }
+      .engine-selector { width: 100%; }
+      .engine-btn { width: 100%; justify-content: space-between; }
+      .engine-dropdown { left: 0; right: 0; min-width: unset; }
+      .search-input-wrap { width: 100%; }
+      .search-btn { width: 100%; margin: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="header-logo">&#9670; 极光导航</div>
+      <div class="header-subtitle">Aurora Nav · 一站式上网入口</div>
+    </header>
+
+    <section class="search-section">
+      <div class="search-wrapper">
+        <div class="engine-selector">
+          <button class="engine-btn" id="engineBtn" onclick="toggleEngineDropdown()">
+            <span id="engineIcon">G</span>
+            <span id="engineName">Google</span>
+            <span class="arrow">&#9660;</span>
+          </button>
+          <div class="engine-dropdown" id="engineDropdown"></div>
+        </div>
+        <div class="search-input-wrap">
+          <input type="text" class="search-input" id="searchInput"
+                 placeholder="输入关键词，Enter 搜索..." autocomplete="off">
+        </div>
+        <button class="search-btn" onclick="doSearch()">搜索</button>
+      </div>
+    </section>
+
+    <section class="ai-section">
+      <div class="section-title">
+        <span class="dot"></span> AI 大模型
+        <span class="category-count" id="aiCount"></span>
+      </div>
+      <div class="ai-grid" id="aiGrid"></div>
+    </section>
+
+    <section class="nav-section">
+      <div class="section-title">
+        <span class="dot"></span> 常用导航
+      </div>
+      <div class="category-tabs" id="categoryTabs"></div>
+      <div class="sites-grid" id="sitesGrid"></div>
+    </section>
+
+    <footer class="footer">
+      极光导航 · 数据存储于本地浏览器
+    </footer>
+  </div>
+
+  <button class="settings-fab" onclick="openSettings()" title="设置">&#9881;</button>
+
+  <div class="overlay" id="overlay" onclick="closeSettings()"></div>
+
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-header">
+      <h2>设置</h2>
+      <button class="settings-close" onclick="closeSettings()">&#10005;</button>
+    </div>
+    <div class="settings-body">
+      <div class="settings-group">
+        <div class="settings-group-title">&#127769; 外观</div>
+        <div class="setting-row">
+          <span class="setting-label">深色模式</span>
+          <button class="toggle-switch on" id="themeToggle" onclick="toggleTheme()"></button>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">&#128269; 搜索引擎管理</div>
+        <div class="editable-list" id="engineList"></div>
+        <div class="add-item-form">
+          <input type="text" id="newEngineName" placeholder="引擎名称">
+          <input type="text" id="newEngineUrl" placeholder="搜索URL (用{q}代替关键词)">
+          <button class="btn-sm primary" onclick="addEngine()">添加</button>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">&#129302; 大模型管理</div>
+        <div class="editable-list" id="modelList"></div>
+        <div class="add-item-form">
+          <input type="text" id="newModelName" placeholder="模型名称">
+          <input type="text" id="newModelUrl" placeholder="链接地址">
+          <button class="btn-sm primary" onclick="addModel()">添加</button>
+        </div>
+      </div>
+    </div>
+    <div class="settings-footer">
+      <button class="btn-sm danger" onclick="resetSettings()">恢复默认</button>
+      <button class="btn-sm primary" onclick="closeSettings()">完成</button>
+    </div>
+  </div>
+
+  <script>
+    'use strict';
+
+    var DEFAULT_ENGINES = [
+      { id: 'google', name: 'Google', url: 'https://www.google.com/search?q={q}', icon: 'G' },
+      { id: 'baidu', name: '百度', url: 'https://www.baidu.com/s?wd={q}', icon: 'B' },
+      { id: 'bing', name: 'Bing', url: 'https://www.bing.com/search?q={q}', icon: 'B' },
+      { id: 'duckduckgo', name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q={q}', icon: 'D' },
+      { id: 'github', name: 'GitHub', url: 'https://github.com/search?q={q}', icon: 'G' },
+      { id: 'stackoverflow', name: 'StackOverflow', url: 'https://stackoverflow.com/search?q={q}', icon: 'S' },
+      { id: 'bilibili', name: 'B站', url: 'https://search.bilibili.com/all?keyword={q}', icon: '哔' }
+    ];
+
+    var DEFAULT_MODELS = [
+      { id: 'chatgpt', name: 'ChatGPT', url: 'https://chat.openai.com', icon: 'C' },
+      { id: 'claude', name: 'Claude', url: 'https://claude.ai', icon: 'C' },
+      { id: 'gemini', name: 'Gemini', url: 'https://gemini.google.com', icon: 'G' },
+      { id: 'kimi', name: 'Kimi', url: 'https://kimi.moonshot.cn', icon: 'K' },
+      { id: 'tongyi', name: '通义千问', url: 'https://tongyi.aliyun.com', icon: '千' },
+      { id: 'ernie', name: '文心一言', url: 'https://yiyan.baidu.com', icon: '言' },
+      { id: 'deepseek', name: 'DeepSeek', url: 'https://chat.deepseek.com', icon: 'D' },
+      { id: 'doubao', name: '豆包', url: 'https://www.doubao.com', icon: '豆' }
+    ];
+
+    var DEFAULT_CATEGORIES = [
+      {
+        id: 'tools', name: '常用工具', icon: '\uD83D\uDD27',
+        sites: [
+          { id: 'gmail', name: 'Gmail', url: 'https://mail.google.com', icon: '\uD83D\uDCE7' },
+          { id: 'translate', name: 'Google 翻译', url: 'https://translate.google.com', icon: '\uD83C\uDF10' },
+          { id: 'maps', name: 'Google Maps', url: 'https://maps.google.com', icon: '\uD83D\uDDFA\uFE0F' },
+          { id: 'drive', name: 'Google Drive', url: 'https://drive.google.com', icon: '\uD83D\uDCC1' },
+          { id: 'qmail', name: 'QQ邮箱', url: 'https://mail.qq.com', icon: '\uD83D\uDCEC' },
+          { id: 'fanyi_baidu', name: '百度翻译', url: 'https://fanyi.baidu.com', icon: '\uD83C\uDFAF' },
+          { id: 'feishu', name: '飞书', url: 'https://www.feishu.cn', icon: '\uD83D\uDCC4' },
+          { id: 'notion', name: 'Notion', url: 'https://www.notion.so', icon: '\uD83D\uDCDD' },
+          { id: 'dingtalk', name: '钉钉', url: 'https://www.dingtalk.com', icon: '\uD83D\uDD14' },
+          { id: 'processon', name: 'ProcessOn', url: 'https://www.processon.com', icon: '\u270F\uFE0F' },
+          { id: 'canva', name: 'Canva', url: 'https://www.canva.cn', icon: '\uD83C\uDFA8' },
+          { id: 'calendar', name: 'Google日历', url: 'https://calendar.google.com', icon: '\uD83D\uDCC5' }
+        ]
+      },
+      {
+        id: 'social', name: '社交媒体', icon: '\uD83D\uDCAC',
+        sites: [
+          { id: 'weixin_re', name: '微信公众平台', url: 'https://mp.weixin.qq.com', icon: '\uD83D\uDC9A' },
+          { id: 'weibo', name: '微博', url: 'https://weibo.com', icon: '\uD83D\uDCE2' },
+          { id: 'zhihu', name: '知乎', url: 'https://www.zhihu.com', icon: '\u2753' },
+          { id: 'douban', name: '豆瓣', url: 'https://www.douban.com', icon: '\uD83D\uDCDA' },
+          { id: 'tieba', name: '贴吧', url: 'https://tieba.baidu.com', icon: '\uD83D\uDCCC' },
+          { id: 'xiaohongshu', name: '小红书', url: 'https://www.xiaohongshu.com', icon: '\uD83D\uDCD5' },
+          { id: 'twitter', name: 'X/Twitter', url: 'https://x.com', icon: '\uD83D\uDC26' },
+          { id: 'reddit', name: 'Reddit', url: 'https://www.reddit.com', icon: '\uD83E\uDD16' },
+          { id: 'jike', name: '即刻', url: 'https://web.okjike.com', icon: '\uD83D\uDFE1' },
+          { id: 'telegram', name: 'Telegram', url: 'https://web.telegram.org', icon: '\u2708\uFE0F' }
+        ]
+      },
+      {
+        id: 'tech', name: '技术社区', icon: '\uD83D\uDCBB',
+        sites: [
+          { id: 'github', name: 'GitHub', url: 'https://github.com', icon: '\uD83D\uDC19' },
+          { id: 'gitee', name: 'Gitee', url: 'https://gitee.com', icon: '\uD83C\uDFE0' },
+          { id: 'stackoverflow', name: 'StackOverflow', url: 'https://stackoverflow.com', icon: '\uD83D\uDCE6' },
+          { id: 'juejin', name: '掘金', url: 'https://juejin.cn', icon: '\uD83D\uDC8E' },
+          { id: 'csdn', name: 'CSDN', url: 'https://www.csdn.net', icon: 'C' },
+          { id: 'segmentfault', name: '思否', url: 'https://segmentfault.com', icon: 'S' },
+          { id: 'v2ex', name: 'V2EX', url: 'https://www.v2ex.com', icon: 'V' },
+          { id: 'oschina', name: '开源中国', url: 'https://www.oschina.net', icon: '\uD83D\uDFE2' },
+          { id: 'npm', name: 'npm', url: 'https://www.npmjs.com', icon: '\uD83D\uDCE6' },
+          { id: 'leetcode', name: 'LeetCode', url: 'https://leetcode.cn', icon: '\uD83C\uDFC6' },
+          { id: 'codepen', name: 'CodePen', url: 'https://codepen.io', icon: '\uD83D\uDDA5\uFE0F' },
+          { id: 'caniuse', name: 'Can I Use', url: 'https://caniuse.com', icon: '\uD83C\uDF10' }
+        ]
+      },
+      {
+        id: 'shopping', name: '购物消费', icon: '\uD83D\uDED2',
+        sites: [
+          { id: 'taobao', name: '淘宝', url: 'https://www.taobao.com', icon: '\uD83D\uDECD\uFE0F' },
+          { id: 'jd', name: '京东', url: 'https://www.jd.com', icon: '\uD83D\uDC36' },
+          { id: 'pdd', name: '拼多多', url: 'https://www.pinduoduo.com', icon: '\uD83C\uDF3B' },
+          { id: 'tmall', name: '天猫', url: 'https://www.tmall.com', icon: '\uD83D\uDC31' },
+          { id: 'suning', name: '苏宁', url: 'https://www.suning.com', icon: '\uD83E\uDD81' },
+          { id: 'meituan', name: '美团', url: 'https://www.meituan.com', icon: '\uD83D\uDFE1' },
+          { id: 'eleme', name: '饿了么', url: 'https://www.ele.me', icon: '\uD83D\uDD35' },
+          { id: 'smzdm', name: '什么值得买', url: 'https://www.smzdm.com', icon: '\uD83D\uDCB0' },
+          { id: 'yanxuan', name: '网易严选', url: 'https://you.163.com', icon: '\uD83C\uDF81' },
+          { id: 'douyin_mall', name: '抖音商城', url: 'https://haohuo.jinritemai.com', icon: '\uD83D\uDED2' }
+        ]
+      },
+      {
+        id: 'video', name: '视频娱乐', icon: '\uD83C\uDFAC',
+        sites: [
+          { id: 'bilibili', name: 'B站', url: 'https://www.bilibili.com', icon: '\uD83D\uDCFA' },
+          { id: 'youtube', name: 'YouTube', url: 'https://www.youtube.com', icon: '\u25B6\uFE0F' },
+          { id: 'iqiyi', name: '爱奇艺', url: 'https://www.iqiyi.com', icon: '\uD83D\uDFE2' },
+          { id: 'youku', name: '优酷', url: 'https://www.youku.com', icon: '\uD83D\uDD35' },
+          { id: 'tencent_video', name: '腾讯视频', url: 'https://v.qq.com', icon: '\uD83C\uDFA5' },
+          { id: 'douyin', name: '抖音', url: 'https://www.douyin.com', icon: '\uD83C\uDFB5' },
+          { id: 'twitch', name: 'Twitch', url: 'https://www.twitch.tv', icon: '\uD83D\uDFE3' },
+          { id: 'netflix', name: 'Netflix', url: 'https://www.netflix.com', icon: 'N' },
+          { id: 'douyu', name: '斗鱼', url: 'https://www.douyu.com', icon: '\uD83D\uDC1F' },
+          { id: 'huya', name: '虎牙', url: 'https://www.huya.com', icon: '\uD83D\uDC2F' }
+        ]
+      },
+      {
+        id: 'news', name: '资讯阅读', icon: '\uD83D\uDCF0',
+        sites: [
+          { id: 'toutiao', name: '今日头条', url: 'https://www.toutiao.com', icon: '\uD83D\uDCF1' },
+          { id: '163news', name: '网易新闻', url: 'https://news.163.com', icon: '\uD83D\uDD1D' },
+          { id: 'tencent_news', name: '腾讯新闻', url: 'https://news.qq.com', icon: '\uD83C\uDF0D' },
+          { id: 'sina_news', name: '新浪新闻', url: 'https://news.sina.com.cn', icon: '\uD83C\uDF0F' },
+          { id: 'ifeng', name: '凤凰网', url: 'https://www.ifeng.com', icon: '\uD83E\uDD85' },
+          { id: 'sspai', name: '少数派', url: 'https://sspai.com', icon: '\uD83D\uDD0D' },
+          { id: '36kr', name: '36氪', url: 'https://36kr.com', icon: '36' },
+          { id: 'ithome', name: 'IT之家', url: 'https://www.ithome.com', icon: '\uD83D\uDCBB' },
+          { id: 'huxiu', name: '虎嗅', url: 'https://www.huxiu.com', icon: '\uD83D\uDC2F' },
+          { id: 'geekpark', name: '极客公园', url: 'https://www.geekpark.net', icon: '\uD83E\uDDD0' }
+        ]
+      },
+      {
+        id: 'ai', name: 'AI工具', icon: '\uD83E\uDD16',
+        sites: [
+          { id: 'chatgpt_web', name: 'ChatGPT', url: 'https://chat.openai.com', icon: 'C' },
+          { id: 'claude_web', name: 'Claude', url: 'https://claude.ai', icon: 'C' },
+          { id: 'gemini_web', name: 'Gemini', url: 'https://gemini.google.com', icon: 'G' },
+          { id: 'kimi_web', name: 'Kimi', url: 'https://kimi.moonshot.cn', icon: 'K' },
+          { id: 'deepseek_web', name: 'DeepSeek', url: 'https://chat.deepseek.com', icon: 'D' },
+          { id: 'doubao_web', name: '豆包', url: 'https://www.doubao.com', icon: '\uD83E\uDD5C' },
+          { id: 'midjourney', name: 'Midjourney', url: 'https://www.midjourney.com', icon: '\uD83C\uDFA8' },
+          { id: 'perplexity', name: 'Perplexity', url: 'https://www.perplexity.ai', icon: 'P' },
+          { id: 'poe', name: 'Poe', url: 'https://poe.com', icon: 'P' },
+          { id: 'huggingface', name: 'HuggingFace', url: 'https://huggingface.co', icon: '\uD83E\uDD17' }
+        ]
+      },
+      {
+        id: 'design', name: '设计资源', icon: '\uD83C\uDFA8',
+        sites: [
+          { id: 'dribbble', name: 'Dribbble', url: 'https://dribbble.com', icon: '\uD83C\uDFC0' },
+          { id: 'behance', name: 'Behance', url: 'https://www.behance.net', icon: 'B' },
+          { id: 'figma', name: 'Figma', url: 'https://www.figma.com', icon: '\u2728' },
+          { id: 'pinterest', name: 'Pinterest', url: 'https://www.pinterest.com', icon: '\uD83D\uDCCC' },
+          { id: 'zcool', name: '站酷', url: 'https://www.zcool.com.cn', icon: 'Z' },
+          { id: 'huaban', name: '花瓣', url: 'https://huaban.com', icon: '\uD83C\uDF38' },
+          { id: 'unsplash', name: 'Unsplash', url: 'https://unsplash.com', icon: '\uD83D\uDCF7' },
+          { id: 'iconfont', name: 'Iconfont', url: 'https://www.iconfont.cn', icon: '\uD83D\uDD8C\uFE0F' }
+        ]
+      },
+      {
+        id: 'cloud', name: '云存储', icon: '\u2601\uFE0F',
+        sites: [
+          { id: 'aliyun', name: '阿里云', url: 'https://www.aliyun.com', icon: '\u2601\uFE0F' },
+          { id: 'qcloud', name: '腾讯云', url: 'https://cloud.tencent.com', icon: '\uD83D\uDD35' },
+          { id: 'aws', name: 'AWS', url: 'https://aws.amazon.com', icon: '\uD83D\uDFE0' },
+          { id: 'cloudflare', name: 'Cloudflare', url: 'https://www.cloudflare.com', icon: '\uD83D\uDEE1\uFE0F' },
+          { id: 'vercel', name: 'Vercel', url: 'https://vercel.com', icon: '\u25B3' },
+          { id: 'netlify', name: 'Netlify', url: 'https://www.netlify.com', icon: 'N' },
+          { id: 'github_page', name: 'GitHub Pages', url: 'https://pages.github.com', icon: '\uD83D\uDC19' },
+          { id: 'pan_baidu', name: '百度网盘', url: 'https://pan.baidu.com', icon: '\u2601\uFE0F' }
+        ]
+      },
+      {
+        id: 'learn', name: '学习平台', icon: '\uD83D\uDCD6',
+        sites: [
+          { id: 'bilibili_learn', name: 'B站课堂', url: 'https://www.bilibili.com/v/douga/', icon: '\uD83C\uDF93' },
+          { id: 'mooc', name: '中国大学MOOC', url: 'https://www.icourse163.org', icon: '\uD83C\uDFEB' },
+          { id: 'coursera', name: 'Coursera', url: 'https://www.coursera.org', icon: 'C' },
+          { id: 'udemy', name: 'Udemy', url: 'https://www.udemy.com', icon: 'U' },
+          { id: 'mdn', name: 'MDN', url: 'https://developer.mozilla.org', icon: 'M' },
+          { id: 'w3schools', name: 'W3Schools', url: 'https://www.w3schools.com', icon: 'W' },
+          { id: 'ruanyf', name: '阮一峰', url: 'https://www.ruanyifeng.com', icon: '\uD83D\uDC68' },
+          { id: 'zhangxinxu', name: '张鑫旭', url: 'https://www.zhangxinxu.com', icon: 'Z' },
+          { id: 'freecodecamp', name: 'FreeCodeCamp', url: 'https://www.freecodecamp.org', icon: 'F' },
+          { id: 'exercism', name: 'Exercism', url: 'https://exercism.org', icon: 'E' }
+        ]
+      }
+    ];
+
+    var engines = [];
+    var models = [];
+    var currentEngineId = 'google';
+    var currentCategory = 'tools';
+    var engineDropdownOpen = false;
+
+    function loadData() {
+      try {
+        var saved = localStorage.getItem('nav_engines');
+        engines = saved ? JSON.parse(saved) : DEFAULT_ENGINES.slice();
+      } catch (e) {
+        engines = DEFAULT_ENGINES.slice();
+      }
+      try {
+        var savedModels = localStorage.getItem('nav_models');
+        models = savedModels ? JSON.parse(savedModels) : DEFAULT_MODELS.slice();
+      } catch (e) {
+        models = DEFAULT_MODELS.slice();
+      }
+      try {
+        currentEngineId = localStorage.getItem('nav_engine') || 'google';
+      } catch (e) {
+        currentEngineId = 'google';
+      }
+      try {
+        currentCategory = localStorage.getItem('nav_category') || 'tools';
+      } catch (e) {
+        currentCategory = 'tools';
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem('nav_engines', JSON.stringify(engines));
+      localStorage.setItem('nav_models', JSON.stringify(models));
+      localStorage.setItem('nav_engine', currentEngineId);
+      localStorage.setItem('nav_category', currentCategory);
+    }
+
+    function getCurrentEngine() {
+      var found = engines.filter(function(e) { return e.id === currentEngineId; });
+      if (found.length > 0) return found[0];
+      currentEngineId = engines.length > 0 ? engines[0].id : 'google';
+      return engines.filter(function(e) { return e.id === currentEngineId; })[0] || engines[0];
+    }
+
+    function getCurrentCategory() {
+      var found = DEFAULT_CATEGORIES.filter(function(c) { return c.id === currentCategory; });
+      return found.length > 0 ? found[0] : DEFAULT_CATEGORIES[0];
+    }
+
+    function renderEngineBtn() {
+      var engine = getCurrentEngine();
+      document.getElementById('engineIcon').textContent = engine.icon;
+      document.getElementById('engineName').textContent = engine.name;
+    }
+
+    function renderEngineDropdown() {
+      var dropdown = document.getElementById('engineDropdown');
+      var html = '';
+      for (var i = 0; i < engines.length; i++) {
+        var e = engines[i];
+        var cls = e.id === currentEngineId ? ' selected' : '';
+        html += '<div class="engine-option' + cls + '" onclick="selectEngine(\'' + e.id + '\')">' +
+          '<div class="engine-icon">' + e.icon + '</div>' +
+          '<span>' + e.name + '</span></div>';
+      }
+      dropdown.innerHTML = html;
+    }
+
+    function selectEngine(id) {
+      currentEngineId = id;
+      saveData();
+      renderEngineBtn();
+      renderEngineDropdown();
+      closeEngineDropdown();
+    }
+
+    function toggleEngineDropdown() {
+      var dropdown = document.getElementById('engineDropdown');
+      var btn = document.getElementById('engineBtn');
+      if (engineDropdownOpen) {
+        closeEngineDropdown();
+      } else {
+        dropdown.classList.add('open');
+        btn.classList.add('active');
+        engineDropdownOpen = true;
+      }
+    }
+
+    function closeEngineDropdown() {
+      var dropdown = document.getElementById('engineDropdown');
+      var btn = document.getElementById('engineBtn');
+      dropdown.classList.remove('open');
+      btn.classList.remove('active');
+      engineDropdownOpen = false;
+    }
+
+    function doSearch() {
+      var input = document.getElementById('searchInput');
+      var query = input.value.trim();
+      if (!query) { input.focus(); return; }
+      var engine = getCurrentEngine();
+      var url = engine.url.replace('{q}', encodeURIComponent(query));
+      window.open(url, '_blank');
+    }
+
+    function renderAISection() {
+      var aiGrid = document.getElementById('aiGrid');
+      var html = '';
+      for (var i = 0; i < models.length; i++) {
+        var m = models[i];
+        html += '<div class="ai-card" onclick="window.open(\'' + m.url + '\', \'_blank\')">' +
+          '<div class="ai-icon">' + m.icon + '</div>' +
+          '<span>' + m.name + '</span></div>';
+      }
+      aiGrid.innerHTML = html;
+      var count = document.getElementById('aiCount');
+      if (count) count.textContent = '(' + models.length + ')';
+    }
+
+    function renderCategoryTabs() {
+      var tabs = document.getElementById('categoryTabs');
+      var html = '';
+      for (var i = 0; i < DEFAULT_CATEGORIES.length; i++) {
+        var c = DEFAULT_CATEGORIES[i];
+        var cls = c.id === currentCategory ? ' active' : '';
+        html += '<button class="category-tab' + cls + '" onclick="switchCategory(\'' + c.id + '\')">' +
+          c.icon + ' ' + c.name + '</button>';
+      }
+      tabs.innerHTML = html;
+    }
+
+    function switchCategory(id) {
+      currentCategory = id;
+      saveData();
+      renderCategoryTabs();
+      renderSitesGrid();
+    }
+
+    function renderSitesGrid() {
+      var grid = document.getElementById('sitesGrid');
+      var cat = getCurrentCategory();
+      var html = '';
+      for (var i = 0; i < cat.sites.length; i++) {
+        var site = cat.sites[i];
+        html += '<div class="site-card" onclick="window.open(\'' + site.url + '\', \'_blank\')">' +
+          '<div class="site-icon-wrap">' + site.icon + '</div>' +
+          '<div class="site-name">' + site.name + '</div></div>';
+      }
+      grid.innerHTML = html;
+    }
+
+    function openSettings() {
+      document.getElementById('settingsPanel').classList.add('open');
+      document.getElementById('overlay').classList.add('open');
+      renderEngineList();
+      renderModelList();
+    }
+
+    function closeSettings() {
+      document.getElementById('settingsPanel').classList.remove('open');
+      document.getElementById('overlay').classList.remove('open');
+    }
+
+    function toggleTheme() {
+      var html = document.documentElement;
+      var toggle = document.getElementById('themeToggle');
+      var isDark = html.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        html.setAttribute('data-theme', 'light');
+        toggle.classList.remove('on');
+        localStorage.setItem('nav_theme', 'light');
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        toggle.classList.add('on');
+        localStorage.setItem('nav_theme', 'dark');
+      }
+    }
+
+    function initTheme() {
+      var saved = localStorage.getItem('nav_theme');
+      if (saved === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.getElementById('themeToggle').classList.remove('on');
+      }
+    }
+
+    function renderEngineList() {
+      var list = document.getElementById('engineList');
+      var html = '';
+      for (var i = 0; i < engines.length; i++) {
+        var e = engines[i];
+        html += '<div class="editable-item">' +
+          '<div class="item-icon">' + e.icon + '</div>' +
+          '<span class="item-name">' + e.name + '</span>' +
+          '<span class="item-url">' + e.url + '</span>' +
+          '<button class="item-delete" onclick="deleteEngine(\'' + e.id + '\')" title="删除">&#10005;</button>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+    }
+
+    function deleteEngine(id) {
+      engines = engines.filter(function(e) { return e.id !== id; });
+      saveData();
+      renderEngineList();
+      renderEngineDropdown();
+      renderEngineBtn();
+    }
+
+    function addEngine() {
+      var nameInput = document.getElementById('newEngineName');
+      var urlInput = document.getElementById('newEngineUrl');
+      var name = nameInput.value.trim();
+      var url = urlInput.value.trim();
+      if (!name || !url) return;
+      var id = 'custom_' + Date.now();
+      engines.push({ id: id, name: name, url: url, icon: name.charAt(0).toUpperCase() });
+      saveData();
+      nameInput.value = '';
+      urlInput.value = '';
+      renderEngineList();
+      renderEngineDropdown();
+    }
+
+    function renderModelList() {
+      var list = document.getElementById('modelList');
+      var html = '';
+      for (var i = 0; i < models.length; i++) {
+        var m = models[i];
+        html += '<div class="editable-item">' +
+          '<div class="item-icon">' + m.icon + '</div>' +
+          '<span class="item-name">' + m.name + '</span>' +
+          '<span class="item-url">' + m.url + '</span>' +
+          '<button class="item-delete" onclick="deleteModel(\'' + m.id + '\')" title="删除">&#10005;</button>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+    }
+
+    function deleteModel(id) {
+      models = models.filter(function(m) { return m.id !== id; });
+      saveData();
+      renderModelList();
+      renderAISection();
+    }
+
+    function addModel() {
+      var nameInput = document.getElementById('newModelName');
+      var urlInput = document.getElementById('newModelUrl');
+      var name = nameInput.value.trim();
+      var url = urlInput.value.trim();
+      if (!name || !url) return;
+      var id = 'model_' + Date.now();
+      models.push({ id: id, name: name, url: url, icon: name.charAt(0).toUpperCase() });
+      saveData();
+      nameInput.value = '';
+      urlInput.value = '';
+      renderModelList();
+      renderAISection();
+    }
+
+    function resetSettings() {
+      if (confirm('确定要恢复默认设置吗？这将清除所有自定义搜索引擎和大模型。')) {
+        engines = DEFAULT_ENGINES.slice();
+        models = DEFAULT_MODELS.slice();
+        currentEngineId = 'google';
+        currentCategory = 'tools';
+        localStorage.clear();
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('themeToggle').classList.add('on');
+        saveData();
+        renderEngineBtn();
+        renderEngineDropdown();
+        renderAISection();
+        renderCategoryTabs();
+        renderSitesGrid();
+        renderEngineList();
+        renderModelList();
+      }
+    }
+
+    document.addEventListener('click', function(e) {
+      if (engineDropdownOpen) {
+        var selector = document.querySelector('.engine-selector');
+        if (selector && !selector.contains(e.target)) {
+          closeEngineDropdown();
+        }
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (engineDropdownOpen) closeEngineDropdown();
+        if (document.getElementById('settingsPanel').classList.contains('open')) closeSettings();
+      }
+    });
+
+    document.getElementById('searchInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') doSearch();
+    });
+
+    function init() {
+      loadData();
+      initTheme();
+      renderEngineBtn();
+      renderEngineDropdown();
+      renderAISection();
+      renderCategoryTabs();
+      renderSitesGrid();
+    }
+
+    init();
+  </script>
+</body>
+</html>
